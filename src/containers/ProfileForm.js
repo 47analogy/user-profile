@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import firebase from '../firebase/firestoreConfig';
 
 // TODO: PHOTO UPLOAD
 
 const ProfileForm = () => {
+  // maybe create a profile obj
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [address1, setAddress1] = useState('');
@@ -14,16 +16,33 @@ const ProfileForm = () => {
   const [securityQ2, setSecurityQ2] = useState('');
   const [securityQ3, setSecurityQ3] = useState('');
 
-  const handleSubmitProfile = () => {
-    // UPDATE VALUE BY NAME
-    // SOME VALIDATION
-    // EMPTY FIELDS
-    console.log(email, phone, address1, address2, setSecurityQ1, securityQ2, securityQ3);
+  const handleSubmitProfile = event => {
+    event.preventDefault();
+
+    const db = firebase.firestore();
+    db.settings({
+      timestampsInSnapshots: true,
+    });
+    const profileRef = db.collection('profiles').add({
+      email,
+      phone,
+      address1,
+      address2,
+      securityQ1,
+      securityQ2,
+      securityQ3,
+    });
+    setEmail('');
+    setPhone('');
+    setAddress1('');
+    setAddress2('');
+    setSecurityQ1('');
+    setSecurityQ2('');
+    setSecurityQ3('');
   };
 
   return (
-    <form>
-      {/* <form onSubmit={handleSubmitProfile}> */}
+    <form onSubmit={handleSubmitProfile}>
       <div>
         <Grid container alignItems="flex-start" spacing={2}>
           <Grid item xs={6}>
@@ -112,7 +131,7 @@ const ProfileForm = () => {
           </Grid>
         </Grid>
       </div>
-      <Button onClick={handleSubmitProfile} variant="contained" color="primary">
+      <Button type="submit" variant="contained" color="primary">
         Submit
       </Button>
     </form>
