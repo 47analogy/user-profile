@@ -3,8 +3,10 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import { makeStyles } from '@material-ui/core/styles';
+import { withRouter } from 'react-router-dom';
+import firebase from '../../firebase/firestoreConfig';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -21,18 +23,24 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SignIn = () => {
+const SignIn = props => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const classes = useStyles();
 
-  function validateForm() {
+  const validateForm = () => {
     return email.length > 0 && password.length > 0;
-  }
+  };
 
-  function handleSubmitSignIn(event) {
+  const handleSubmitSignIn = async event => {
     event.preventDefault();
-  }
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+      props.history.replace('/profile');
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -84,4 +92,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default withRouter(SignIn);

@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import firebase from '../../firebase/firestoreConfig';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -21,18 +22,24 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SignUp = () => {
+const SignUp = props => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const classes = useStyles();
 
-  function validateForm() {
+  const validateForm = () => {
     return email.length > 0 && password.length > 0;
-  }
+  };
 
-  function handleSubmitSignUp(event) {
+  const handleSubmitSignUp = async event => {
     event.preventDefault();
-  }
+    try {
+      await firebase.auth().createUserWithEmailAndPassword(email, password);
+      props.history.replace('/profile-form'); // send users directly to profile form
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
 
   return (
     <Container component="main" maxWidth="xs">
